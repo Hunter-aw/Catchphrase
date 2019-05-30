@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const socket = require ('socket.io')
+const gamePlay = require('./server/gamePlay')
 
 const app = express()
 const port = 8000
@@ -17,21 +18,49 @@ io.players = []
 const secretWords = ['potato', 'carrot', 'jona']
 let currentPlayer = 0
 let turn = 0
+console.log("hay")
+let db = {
+    users:{},
+    games: {}
+}
 
-io.on('connection', async (socket) => {
-    await socket.join('hunter', () => console.log('connected'))
+io.on('connection', (socket) => {
+    
     socket.emit('login')
-
+    let currentGame;
+    
+    
     socket.on('name', (data) => {
-        console.log('name')
         socket.username = data.name
-        io.players.push({name: socket.username, id: socket.id, score: 0})
-        console.log(io.players)
+        let player = new gamePlay.Player(socket.id, socket.username) 
+        io.players.push(player)
+        db.users[data.name] = player
+        socket.emit('name', socket.username)
+
+    })
+    socket.on('new-game', (room) => {
+        socket.join(room, () => console.log('connected'))
+        db.users[socket.username].room = room
     })
 
+    socket.on('join-game', (room) => {
+        socket.join(room, () => console.log('connected'))
+        db.users[socket.username].room = room
+    })
+
+    socket.on('startGame', (data) => {
+        let game = new gamePlay.GamePlay()
+        let registeredPlayersArray = Object.keys(db.users).map(c => db.users[c])
+        let gamePlayers = registeredPlayersArray.filter(s => s.room === data.room)
+        game.players = gamePlayers
+        game.numberOfPlayers = gamePlayers.length
+        db.games[data.room] = game
+        currentGame = data.room    
+        console.log(db)   
+    })
+    
     socket.on('newTurn', () => {
-        io.emit('currentPlayer', {currentPlayer: io.players[currentPlayer]})
-        console.log(io.players[currentPlayer])
+        io.emit('currentPlayer', {currentPlayer: db[game].players[currentPlayer]})
         io.to(io.players[currentPlayer].id).emit('secretWord', {secretWord: secretWords[currentPlayer]})
         if (!currentPlayer) {
             currentPlayer ++
@@ -40,7 +69,6 @@ io.on('connection', async (socket) => {
     
     socket.on('private', (data) => {
         const numPeop = Object.keys(io.sockets.sockets).length
-        console.log(socket.id)
         io.to(socket.id).emit('private_s', {numPeop : numPeop})
     })
 

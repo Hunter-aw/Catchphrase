@@ -1,5 +1,8 @@
 let socket = io()
+let username
+let room
 // Jquery triggers
+
 $('#private').click(() => {
     socket.emit('private')
 })
@@ -11,9 +14,31 @@ $('#newTurn').click(() => {
 $('#name').keypress((e) => {
     if (e.which === 13) {
         e.preventDefault()
-        socket.emit('name', {name: $('#name').val()})
+        username = $('#name').val()
+        socket.emit('name', {name: username})
         $('#name').remove()
     }
+})
+
+$('#new-game').click(() => {
+    room = username + `${Math.floor(Math.random()*10)}`
+    socket.emit('new-game', room)
+    $('#signin').empty().append(`<div class = 'loginText'>your room name is <span class = 'emphasized'>${room}</span></div>
+                        <button id = "start-game">Start Game!</button>`)
+})
+
+$('#join-game').click(() => {
+        $('#signin').empty().append(`<input class = 'loginText' id = 'joinInput' placeholder = 'enter the room name'>
+                        <button id = "start-join-game">Join Game!</button>`)
+})
+
+$('.container').on('click', '#start-game', () => {
+    $('#login').remove()
+    socket.emit('startGame', {room: room})
+})
+$('.container').on('click', '#start-join-game', () => {
+    socket.emit('join-game', $('#joinInput').val())
+    $('#login').remove()
 })
 
 //Socket listeners

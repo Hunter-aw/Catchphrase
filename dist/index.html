@@ -1,8 +1,29 @@
-<h1>WE UP IN DIS</h1>
-<input placeholder="what's your name?" id="name"/><br/>
-<button id="private">get private message</button>
-<button id = "newTurn">New Turn</button>
-<div id = "main"></div>
-<script src="/socket.io/socket.io.js"></script>
-<script src = "/jquery/dist/jquery.js"></script>
-<script src="/main.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Catchphrase!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Karla&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css">
+</head>
+<body>
+    <div class = 'container'>
+        <div id= 'login'>
+            <div id = 'signin'>
+                <input placeholder="what's your name?" id="name" class='loginText'/><br/>
+                <button id='new-game'>New Game</button>
+                <button id = 'join-game'>Join Game</button>
+            </div>
+        </div>
+        <h1>WE UP IN DIS</h1>
+        <button id="private">get private message</button>
+        <button id = "newTurn">New Turn</button>
+        <div id = "main"></div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src = "/jquery/dist/jquery.js"></script>
+    <script src="/main.js"></script>
+</body>
+</html>
