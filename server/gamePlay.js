@@ -9,7 +9,8 @@ class GamePlay {
     addPlayer(player) {
         this.players.push(player)
     }
-    scorePoint(player) {
+    scorePoint(playerName) {
+        let player = this.players.find(p => p.name === playerName)
         player.score += 10
     }
     nextTurn () {
